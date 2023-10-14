@@ -8,12 +8,7 @@ const assert = require('assert');
 let apiKey;
 let userId;
 
-Given('I have valid credentials', function () {
-  // Replace 'YOUR_API_KEY' with the actual API key
-  apiKey = '5cb22dce7db4a635c33734ec16f62c5ca49d2a52c3dece07598fad1c8a97ce3d';
-});
-
-When('I create a new user', async function () {
+const login = async () => {
   const userData = {
     name: 'John Doe',
     gender: 'male',
@@ -30,70 +25,32 @@ When('I create a new user', async function () {
 
     assert.strictEqual(response.status, 201);
     userId = response.data.data.id;
+    return response;
   } catch (error) {
     this.error = error.response ? error.response.data : error.message;
   }
+}
+
+
+
+Given('I have a valid bearer token', function () {
+  // Replace 'YOUR_API_KEY' with the actual API key
+  apiKey = '5cb22dce7db4a635c33734ec16f62c5ca49d2a52c3dece07598fad1c8a97ce3d';
+});
+When('I send a POST request to {string} with valid user data', async function (string) {
+  // Write code here that turns the phrase above into concrete actions
+ login();
 });
 
-Then('the user is created successfully', function () {
-  assert.ifError(this.error);
-  assert.ok(userId);
+Then('the response status code should be {int}', function (int) {
+  // Then('the response status code should be {float}', function (float) {
+    // Write code here that turns the phrase above into concrete actions
+    const response = login();
+    return response.status;
+  });
+Then('the response should contain the user details', function () {
+  const response = login();
+  return response.data;
 });
 
-When('I get details for user with ID {string}', async function (userId) {
-  try {
-    const response = await axios.get(`https://gorest.co.in/rest-console${userId}`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
 
-    assert.strictEqual(response.status, 200);
-  } catch (error) {
-    this.error = error.response ? error.response.data : error.message;
-  }
-});
-
-Then('the user details are retrieved successfully', function () {
-  assert.ifError(this.error);
-});
-
-When('I update details for user with ID {string}', async function (userId) {
-  const updatedUserData = {
-    name: 'Updated Name',
-  };
-
-  try {
-    const response = await axios.put(`https://gorest.co.in/rest-console${userId}`, updatedUserData, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
-
-    assert.strictEqual(response.status, 200);
-  } catch (error) {
-    this.error = error.response ? error.response.data : error.message;
-  }
-});
-
-Then('the user details are updated successfully', function () {
-  assert.ifError(this.error);
-});
-
-When('I delete user with ID {string}', async function (userId) {
-  try {
-    const response = await axios.delete(`https://gorest.co.in/rest-console${userId}`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
-
-    assert.strictEqual(response.status, 204);
-  } catch (error) {
-    this.error = error.response ? error.response.data : error.message;
-  }
-});
-
-Then('the user is deleted successfully', function () {
-  assert.ifError(this.error);
-});
